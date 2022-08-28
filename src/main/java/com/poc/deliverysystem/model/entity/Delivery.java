@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -38,9 +39,9 @@ public class Delivery implements Serializable {
     private DeliveryStatus status;
 
     @Column(name = "CREATION_DATE")
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     @Column(name = "UPDATE_DATE")
-    private Date updateDate;
+    private LocalDateTime updateDate;
 
 }

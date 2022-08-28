@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,16 +33,16 @@ public class GenericSpecification<T> implements Specification<T> {
         for (SearchCriteria criteria : list) {
             if (criteria.getOperation().equals(SearchOperation.GREATER_THAN)) {
                 predicates.add(criteriaBuilder.greaterThan(
-                        root.get(criteria.getKey()), criteria.getValue().toString()));
+                        root.get(criteria.getKey()).as(LocalDateTime.class), (LocalDateTime) criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN)) {
                 predicates.add(criteriaBuilder.lessThan(
-                        root.get(criteria.getKey()), criteria.getValue().toString()));
+                        root.get(criteria.getKey()).as(LocalDateTime.class), (LocalDateTime) criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.GREATER_THAN_EQUAL)) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get(criteria.getKey()), criteria.getValue().toString()));
+                        root.get(criteria.getKey()).as(LocalDateTime.class), (LocalDateTime) criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN_EQUAL)) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get(criteria.getKey()), criteria.getValue().toString()));
+                        root.get(criteria.getKey()).as(LocalDateTime.class), (LocalDateTime) criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.NOT_EQUAL)) {
                 predicates.add(criteriaBuilder.notEqual(
                         root.get(criteria.getKey()), criteria.getValue()));

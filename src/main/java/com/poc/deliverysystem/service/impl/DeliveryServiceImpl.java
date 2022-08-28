@@ -19,13 +19,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -91,8 +92,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                     " ### NOTE: Please search only these filter keys: deliveryId," +
                     " senderCompany, senderWarehouseAddress, deliveryAddress, requesterInformation," +
                     " status, creationDate, updateDate, from, to ###");
-        } catch (DateTimeParseException e) {
-            throw new RuntimeException("Date Time Parse : " + e.getMessage());
         }
 
         return deliveryResponseDtoList;
@@ -139,10 +138,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         return responseDto;
     }
 
-    private Date getDateByValue(String value) {
+    private LocalDateTime getDateByValue(String value) {
         try {
-            return formatter.parse(value);
-        } catch (ParseException e) {
+            return new Timestamp(formatter.parse(value).getTime()).toLocalDateTime();
+        } catch (Exception e) {
             throw new DateParseException("Date parse exception: " + value);
         }
     }
@@ -155,8 +154,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setOrderId(deliveryRequestDto.getOrderId());
         delivery.setStatus(DeliveryStatus.NEW);
         delivery.setRequesterInformation(deliveryRequestDto.getRequesterInformation());
-        delivery.setCreationDate(new Date());
-        delivery.setUpdateDate(new Date());
+        delivery.setCreationDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        delivery.setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         return deliveryRepository.save(delivery);
     }
 
