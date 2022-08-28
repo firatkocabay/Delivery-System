@@ -23,7 +23,7 @@ public class Delivery implements Serializable {
     @JoinTable(name = "SENDER_COMPANY", joinColumns = @JoinColumn(name = "DELIVERY_INFORMATION_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
     private Company senderCompany;
 
-    @Column(name = "ORDER_ID", nullable = false)
+    @Column(name = "ORDER_ID", nullable = false, unique = true)
     private String orderId;
 
     @Column(name = "SENDER_WAREHOUSE_ADDRESS", nullable = false)

@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public UserDto getUserByUserNameAndPassword(String userName, String password) {
         UserDto userDto = new UserDto();
@@ -29,6 +28,7 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             userDto.setUserName(optionalUser.get().getUserName());
             userDto.setPassword(optionalUser.get().getPassword());
+            userDto.setCompanyId(optionalUser.get().getCompanyId());
         }
         return userDto;
     }
@@ -39,8 +39,10 @@ public class UserServiceImpl implements UserService {
         CompanyUser companyUser = new CompanyUser();
         companyUser.setUserName(userDto.getUserName());
         companyUser.setPassword(userDto.getPassword());
+        companyUser.setCompanyId(userDto.getCompanyId());
         companyUser.setEnabled(true);
         companyUser.setCreationDate(LocalDateTime.now());
         userRepository.save(companyUser);
     }
+
 }

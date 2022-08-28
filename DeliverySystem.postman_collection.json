@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "94da00c1-1bdb-48cc-b51c-d6fb2770700e",
+		"name": "DeliverySystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2824367"
+	},
+	"item": [
+		{
+			"name": "Company Register",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"companyName\": \"ABC Mobilya\",\r\n    \"companyAddress\": \"Cumhuriyet Mahallesi Dalaman Muğla Türkiye\",\r\n    \"companyWarehouseAddress\": \"Karaçulha Mahallesi Fethiye Muğla Türkiye\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/company/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"company",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Delivery",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "c9926026-07da-4dd1-9629-0650d335867c",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "abcmobilya",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"orderId\": \"12345\",\r\n    \"requesterInformation\": \"test1\",\r\n    \"senderWarehouseAddress\": \"Cumhuriyet Mahallesi Merkez Adana Türkiye\",\r\n    \"deliveryAddress\": \"Karşıyaka Mahallesi Merkez İzmir Türkiye\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/delivery",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"delivery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Dynamic Search By ReqParams",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "c9926026-07da-4dd1-9629-0650d335867c",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "abcmobilya",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/delivery",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"delivery"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

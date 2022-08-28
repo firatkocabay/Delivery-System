@@ -1,7 +1,6 @@
 package com.poc.deliverysystem.service.impl;
 
 import com.poc.deliverysystem.exception.CompanyNotFoundException;
-import com.poc.deliverysystem.model.dto.CompanyDetailResponseDto;
 import com.poc.deliverysystem.model.dto.CompanyRequestDto;
 import com.poc.deliverysystem.model.dto.CompanyResponseDto;
 import com.poc.deliverysystem.model.dto.UserDto;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.text.Normalizer;
 import java.util.Base64;
-import java.util.prefs.BackingStoreException;
 
 @Slf4j
 @Service
@@ -30,34 +28,33 @@ public class CompanyServiceImpl implements CompanyService {
         this.userService = userService;
     }
 
-    @Override
-    public CompanyDetailResponseDto getCompanyInfo(String companyId) {
-        CompanyDetailResponseDto responseDto = new CompanyDetailResponseDto();
-        Company company = companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException("Company not found!"));
-        responseDto.setCompanyId(company.getCompanyId());
-        responseDto.setCompanyName(company.getCompanyName());
-        responseDto.setCompanyAddress(company.getCompanyAddress());
-        responseDto.setCompanyWarehouseAddress(company.getCompanyWarehouseAddresses());
-        return responseDto;
-    }
-
     @Transactional
     @Override
     public CompanyResponseDto createNewCompany(CompanyRequestDto companyRequestDto) {
         CompanyResponseDto responseDto = new CompanyResponseDto();
+        final String companyId = createCompany(companyRequestDto);
+        String companyUserName = Normalizer.normalize(companyRequestDto.getCompanyName().toLowerCase().replace(" ",""), Normalizer.Form.NFD);
+        createCompanyUser(companyId, companyUserName);
+        responseDto.setUserName(companyUserName);
+        responseDto.setPassword(companyId);
+        return responseDto;
+    }
+
+    @Transactional
+    protected String createCompany(CompanyRequestDto companyRequestDto) {
         Company company = new Company();
         company.setCompanyName(companyRequestDto.getCompanyName());
         company.setCompanyAddress(companyRequestDto.getCompanyAddress());
         company.setCompanyWarehouseAddresses(companyRequestDto.getCompanyWarehouseAddress());
-        String companyId = companyRepository.save(company).getCompanyId();
-        String companyUserName = Normalizer.normalize(companyRequestDto.getCompanyName().toLowerCase().replace(" ",""), Normalizer.Form.NFD);
+        return companyRepository.save(company).getCompanyId();
+    }
+
+    private void createCompanyUser(String companyId, String companyUserName) {
         UserDto userDto = new UserDto();
         userDto.setUserName(companyUserName);
         userDto.setPassword(Base64.getEncoder().encodeToString(companyId.getBytes()));
+        userDto.setCompanyId(companyId);
         userService.saveUser(userDto);
-        responseDto.setUserName(companyUserName);
-        responseDto.setPassword(companyId);
-        return responseDto;
     }
 
     @Override

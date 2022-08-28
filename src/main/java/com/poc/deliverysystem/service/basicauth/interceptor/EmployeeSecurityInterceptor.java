@@ -43,9 +43,7 @@ public class EmployeeSecurityInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView){
-
         log.info("[Inside POST Handle Interceptor]" + request.getRequestURI());
-
     }
 
 }

@@ -18,11 +18,14 @@ public class CompanyUser implements Serializable {
     @Column(name = "COMPANY_USER_ID", nullable = false, updatable = false)
     private String userId;
 
-    @Column(name = "USER_NAME", nullable = false)
+    @Column(name = "USER_NAME", nullable = false, unique = true)
     private String userName;
 
     @Column(name = "PASSWORD", nullable = false)
     private String password;
+
+    @Column(name = "COMPANY_ID", nullable = false)
+    private String companyId;
 
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
