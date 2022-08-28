@@ -22,6 +22,9 @@ public class Delivery implements Serializable {
     @Column(name = "SENDER_COMPANY_ID", nullable = false)
     private String senderCompanyId;
 
+    @Column(name = "ORDER_ID", nullable = false)
+    private String orderId;
+
     @Column(name = "SENDER_WAREHOUSE_ADDRESS", nullable = false)
     private String senderWarehouseAddress;
 

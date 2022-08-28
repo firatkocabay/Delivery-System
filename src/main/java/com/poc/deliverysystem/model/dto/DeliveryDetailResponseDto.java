@@ -10,6 +10,7 @@ public class DeliveryDetailResponseDto {
 
     private String deliveryId;
     private String senderCompanyId;
+    private String orderId;
     private String senderWarehouseAddress;
     private String deliveryAddress;
     private String requesterInformation;

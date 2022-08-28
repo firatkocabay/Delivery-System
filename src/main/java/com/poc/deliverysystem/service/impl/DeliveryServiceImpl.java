@@ -15,19 +15,17 @@ import com.poc.deliverysystem.specification.SearchCriteria;
 import com.poc.deliverysystem.specification.SearchOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -46,9 +44,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     public List<DeliveryDetailResponseDto> getDeliveriesByCriteria(Map<String, String> queryCriteria) {
         List<DeliveryDetailResponseDto> deliveryResponseDtoList = new ArrayList<>();
         GenericSpecification<Delivery> genericSpecification = new GenericSpecification<>();
+        Map<String,Integer> pageAndLimit = new HashMap<>();
         try {
             queryCriteria.forEach((key, value) -> {
                 switch (key) {
+                    case "page":
+                    case "limit":
+                        pageAndLimit.put(key, Integer.valueOf(value));
+                        break;
                     case "senderWarehouseAddress":
                     case "deliveryAddress":
                         genericSpecification.add(new SearchCriteria(key, value, SearchOperation.MATCH));
@@ -68,23 +71,22 @@ public class DeliveryServiceImpl implements DeliveryService {
                 }
             });
 
-            final List<Delivery> deliveryList = deliveryRepository.findAll(genericSpecification);
-
-            deliveryList.forEach(delivery -> {
-                DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
-                responseDto.setDeliveryId(delivery.getDeliveryId());
-                responseDto.setSenderCompanyId(delivery.getSenderCompanyId());
-                responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
-                responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
-                responseDto.setRequesterInformation(delivery.getRequesterInformation());
-                responseDto.setStatus(delivery.getStatus());
-                responseDto.setCreationDate(delivery.getCreationDate());
-                responseDto.setUpdateDate(delivery.getUpdateDate());
-                deliveryResponseDtoList.add(responseDto);
-            });
+            if (pageAndLimit.get("page") != null || pageAndLimit.get("limit") != null) {
+                Page<Delivery> deliveryList;
+                if (pageAndLimit.get("limit") == null || pageAndLimit.get("limit") < 1) {
+                    PageRequest pageRequest = PageRequest.of(pageAndLimit.get("page"), 10);
+                    deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
+                } else {
+                    PageRequest pageRequest = PageRequest.of(0, pageAndLimit.get("limit"));
+                    deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
+                }
+                createResponseDto(deliveryResponseDtoList, deliveryList);
+            } else {
+                List<Delivery> deliveryList = deliveryRepository.findAll(genericSpecification);
+                createResponseDto(deliveryResponseDtoList, deliveryList);
+            }
 
         } catch (IllegalArgumentException | InvalidDataAccessApiUsageException e) {
-            //e.getMessage().split(":")[1].split("\\[com")[0]
             throw new SearchIllegalArgumentException("Exception message is: " + e.getMessage() +
                     " ### NOTE: Please search only these filter keys: deliveryId," +
                     " senderCompany, senderWarehouseAddress, deliveryAddress, requesterInformation," +
@@ -94,6 +96,38 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return deliveryResponseDtoList;
+    }
+
+    private static void createResponseDto(List<DeliveryDetailResponseDto> deliveryResponseDtoList, Page<Delivery> deliveryList) {
+        deliveryList.forEach(delivery -> {
+            DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
+            responseDto.setDeliveryId(delivery.getDeliveryId());
+            responseDto.setSenderCompanyId(delivery.getSenderCompanyId());
+            responseDto.setOrderId(delivery.getOrderId());
+            responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
+            responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
+            responseDto.setRequesterInformation(delivery.getRequesterInformation());
+            responseDto.setStatus(delivery.getStatus());
+            responseDto.setCreationDate(delivery.getCreationDate());
+            responseDto.setUpdateDate(delivery.getUpdateDate());
+            deliveryResponseDtoList.add(responseDto);
+        });
+    }
+
+    private static void createResponseDto(List<DeliveryDetailResponseDto> deliveryResponseDtoList, List<Delivery> deliveryList) {
+        deliveryList.forEach(delivery -> {
+            DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
+            responseDto.setDeliveryId(delivery.getDeliveryId());
+            responseDto.setSenderCompanyId(delivery.getSenderCompanyId());
+            responseDto.setOrderId(delivery.getOrderId());
+            responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
+            responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
+            responseDto.setRequesterInformation(delivery.getRequesterInformation());
+            responseDto.setStatus(delivery.getStatus());
+            responseDto.setCreationDate(delivery.getCreationDate());
+            responseDto.setUpdateDate(delivery.getUpdateDate());
+            deliveryResponseDtoList.add(responseDto);
+        });
     }
 
     @Override
@@ -118,6 +152,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryAddress(deliveryRequestDto.getDeliveryAddress());
         delivery.setSenderWarehouseAddress(deliveryRequestDto.getSenderWarehouseAddress());
         delivery.setSenderCompanyId(deliveryRequestDto.getCompanyId());
+        delivery.setOrderId(deliveryRequestDto.getOrderId());
         delivery.setStatus(DeliveryStatus.NEW);
         delivery.setRequesterInformation(deliveryRequestDto.getRequesterInformation());
         delivery.setCreationDate(new Date());
