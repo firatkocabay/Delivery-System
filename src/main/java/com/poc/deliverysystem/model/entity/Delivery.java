@@ -20,8 +20,9 @@ public class Delivery implements Serializable {
     @Column(name = "DELIVERY_ID", nullable = false, updatable = false)
     private String deliveryId;
 
-    @Column(name = "SENDER_COMPANY_ID", nullable = false)
-    private String senderCompanyId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinTable(name = "SENDER_COMPANY", joinColumns = @JoinColumn(name = "DELIVERY_INFORMATION_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
+    private Company senderCompany;
 
     @Column(name = "ORDER_ID", nullable = false)
     private String orderId;

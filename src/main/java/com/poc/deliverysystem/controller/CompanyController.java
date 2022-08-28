@@ -22,7 +22,7 @@ public class CompanyController {
         return new ResponseEntity<>(companyService.getCompanyInfo(companyId), HttpStatus.OK);
     }
 
-    @PostMapping("/v1/company/register")
+    @PostMapping("/company/register")
     public ResponseEntity<CompanyResponseDto> createCompany(@RequestBody CompanyRequestDto companyRequestDto) {
         return new ResponseEntity<>(companyService.createNewCompany(companyRequestDto), HttpStatus.OK);
     }

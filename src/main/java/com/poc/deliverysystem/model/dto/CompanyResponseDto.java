@@ -6,5 +6,7 @@ import lombok.Data;
 public class CompanyResponseDto {
 
     private String companyId;
+    private String userName;
+    private String password;
 
 }

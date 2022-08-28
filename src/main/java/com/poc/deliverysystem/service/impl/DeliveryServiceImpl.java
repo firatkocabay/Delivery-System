@@ -53,6 +53,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                     case "limit":
                         pageAndLimit.put(key, Integer.valueOf(value));
                         break;
+                    case "senderCompany":
+                        genericSpecification.add(new SearchCriteria(key, companyService.findCompany(value), SearchOperation.EQUAL));
+                        break;
                     case "senderWarehouseAddress":
                     case "deliveryAddress":
                         genericSpecification.add(new SearchCriteria(key, value, SearchOperation.MATCH));
@@ -101,7 +104,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryList.forEach(delivery -> {
             DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
             responseDto.setDeliveryId(delivery.getDeliveryId());
-            responseDto.setSenderCompanyId(delivery.getSenderCompanyId());
+            responseDto.setSenderCompanyName(delivery.getSenderCompany().getCompanyName());
             responseDto.setOrderId(delivery.getOrderId());
             responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
             responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
@@ -117,7 +120,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryList.forEach(delivery -> {
             DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
             responseDto.setDeliveryId(delivery.getDeliveryId());
-            responseDto.setSenderCompanyId(delivery.getSenderCompanyId());
+            responseDto.setSenderCompanyName(delivery.getSenderCompany().getCompanyName());
             responseDto.setOrderId(delivery.getOrderId());
             responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
             responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
@@ -150,7 +153,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = new Delivery();
         delivery.setDeliveryAddress(deliveryRequestDto.getDeliveryAddress());
         delivery.setSenderWarehouseAddress(deliveryRequestDto.getSenderWarehouseAddress());
-        delivery.setSenderCompanyId(deliveryRequestDto.getCompanyId());
+        delivery.setSenderCompany(companyService.findCompany(deliveryRequestDto.getCompanyId()));
         delivery.setOrderId(deliveryRequestDto.getOrderId());
         delivery.setStatus(DeliveryStatus.NEW);
         delivery.setRequesterInformation(deliveryRequestDto.getRequesterInformation());

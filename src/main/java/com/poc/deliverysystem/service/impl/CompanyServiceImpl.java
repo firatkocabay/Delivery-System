@@ -8,17 +8,24 @@ import com.poc.deliverysystem.model.entity.Company;
 import com.poc.deliverysystem.repository.CompanyRepository;
 import com.poc.deliverysystem.service.CompanyService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.text.Normalizer;
 
 @Slf4j
 @Service
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
+    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
-    public CompanyServiceImpl(CompanyRepository companyRepository) {
+    @Autowired
+    public CompanyServiceImpl(CompanyRepository companyRepository, InMemoryUserDetailsManager inMemoryUserDetailsManager) {
         this.companyRepository = companyRepository;
+        this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
     }
 
     @Override
@@ -42,6 +49,10 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompanyWarehouseAddresses(companyRequestDto.getCompanyWarehouseAddress());
         String companyId = companyRepository.save(company).getCompanyId();
         responseDto.setCompanyId(companyId);
+        String companyUserName = Normalizer.normalize(companyRequestDto.getCompanyName().toLowerCase().replace(" ",""), Normalizer.Form.NFD);
+        inMemoryUserDetailsManager.createUser(User.withUsername(companyUserName).password(companyId).roles("USER").build());
+        responseDto.setUserName(companyUserName);
+        responseDto.setPassword(companyId);
         return responseDto;
     }
 

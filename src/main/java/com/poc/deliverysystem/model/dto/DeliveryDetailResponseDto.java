@@ -10,7 +10,7 @@ import java.util.Date;
 public class DeliveryDetailResponseDto {
 
     private String deliveryId;
-    private String senderCompanyId;
+    private String senderCompanyName;
     private String orderId;
     private String senderWarehouseAddress;
     private String deliveryAddress;
