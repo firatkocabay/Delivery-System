@@ -6,8 +6,9 @@ import com.poc.deliverysystem.repository.UserRepository;
 import com.poc.deliverysystem.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
         return userDto;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void saveUser(UserDto userDto) {
         CompanyUser companyUser = new CompanyUser();

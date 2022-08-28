@@ -1,6 +1,5 @@
 package com.poc.deliverysystem.service.basicauth.interceptor;
 
-import com.poc.deliverysystem.repository.UserRepository;
 import com.poc.deliverysystem.service.basicauth.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

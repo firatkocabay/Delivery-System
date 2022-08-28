@@ -1,6 +1,5 @@
 package com.poc.deliverysystem.service.impl;
 
-import com.poc.deliverysystem.exception.CompanyNotFoundException;
 import com.poc.deliverysystem.exception.CompanyNotMatchException;
 import com.poc.deliverysystem.exception.DateParseException;
 import com.poc.deliverysystem.exception.SearchIllegalArgumentException;
@@ -21,6 +20,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -114,8 +114,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId) {
         DeliveryResponseDto responseDto = new DeliveryResponseDto();
         Company company = companyService.findCompany(companyId);
-        Delivery delivery = createDeliveryEntity(deliveryRequestDto, company);
-        responseDto.setDeliveryId(delivery.getDeliveryId());
+        String deliveryId = createDeliveryEntity(deliveryRequestDto, company);
+        responseDto.setDeliveryId(deliveryId);
         return responseDto;
     }
 
@@ -159,7 +159,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
     }
 
-    private Delivery createDeliveryEntity(DeliveryRequestDto deliveryRequestDto, Company company) {
+    @Transactional
+    protected String createDeliveryEntity(DeliveryRequestDto deliveryRequestDto, Company company) {
         Delivery delivery = new Delivery();
         delivery.setDeliveryAddress(deliveryRequestDto.getDeliveryAddress());
         delivery.setSenderWarehouseAddress(deliveryRequestDto.getSenderWarehouseAddress());
@@ -169,7 +170,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setRequesterInformation(deliveryRequestDto.getRequesterInformation());
         delivery.setCreationDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         delivery.setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-        return deliveryRepository.save(delivery);
+        return deliveryRepository.save(delivery).getDeliveryId();
     }
 
 }
