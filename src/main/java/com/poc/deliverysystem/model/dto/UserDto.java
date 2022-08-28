@@ -3,9 +3,7 @@ package com.poc.deliverysystem.model.dto;
 import lombok.Data;
 
 @Data
-public class CompanyResponseDto {
-
+public class UserDto {
     private String userName;
     private String password;
-
 }

@@ -54,4 +54,12 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CompanyNotMatchException.class)
+    public ResponseEntity<Object> handleCompanyNotMatchException(CompanyNotMatchException ex, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+    }
+
 }

@@ -4,7 +4,6 @@ import com.poc.deliverysystem.model.enums.DeliveryStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class DeliveryDetailResponseDto {

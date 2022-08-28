@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class DeliveryRequestDto {
 
-    private String companyId;
     private String orderId;
     private String requesterInformation;
     private String senderWarehouseAddress;

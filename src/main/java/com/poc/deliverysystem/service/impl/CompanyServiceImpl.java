@@ -4,28 +4,30 @@ import com.poc.deliverysystem.exception.CompanyNotFoundException;
 import com.poc.deliverysystem.model.dto.CompanyDetailResponseDto;
 import com.poc.deliverysystem.model.dto.CompanyRequestDto;
 import com.poc.deliverysystem.model.dto.CompanyResponseDto;
+import com.poc.deliverysystem.model.dto.UserDto;
 import com.poc.deliverysystem.model.entity.Company;
 import com.poc.deliverysystem.repository.CompanyRepository;
 import com.poc.deliverysystem.service.CompanyService;
+import com.poc.deliverysystem.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.text.Normalizer;
+import java.util.Base64;
+import java.util.prefs.BackingStoreException;
 
 @Slf4j
 @Service
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
-    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
+    private final UserService userService;
 
     @Autowired
-    public CompanyServiceImpl(CompanyRepository companyRepository, InMemoryUserDetailsManager inMemoryUserDetailsManager) {
+    public CompanyServiceImpl(CompanyRepository companyRepository, UserService userService) {
         this.companyRepository = companyRepository;
-        this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
+        this.userService = userService;
     }
 
     @Override
@@ -48,9 +50,11 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompanyAddress(companyRequestDto.getCompanyAddress());
         company.setCompanyWarehouseAddresses(companyRequestDto.getCompanyWarehouseAddress());
         String companyId = companyRepository.save(company).getCompanyId();
-        responseDto.setCompanyId(companyId);
         String companyUserName = Normalizer.normalize(companyRequestDto.getCompanyName().toLowerCase().replace(" ",""), Normalizer.Form.NFD);
-        inMemoryUserDetailsManager.createUser(User.withUsername(companyUserName).password(companyId).roles("USER").build());
+        UserDto userDto = new UserDto();
+        userDto.setUserName(companyUserName);
+        userDto.setPassword(Base64.getEncoder().encodeToString(companyId.getBytes()));
+        userService.saveUser(userDto);
         responseDto.setUserName(companyUserName);
         responseDto.setPassword(companyId);
         return responseDto;

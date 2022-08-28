@@ -9,8 +9,8 @@ import java.util.Map;
 
 public interface DeliveryService {
 
-    List<DeliveryDetailResponseDto> getDeliveriesByCriteria(Map<String,String> queryCriteria);
+    List<DeliveryDetailResponseDto> getDeliveriesByCriteria(Map<String,String> queryCriteria, String companyId);
 
-    DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto);
+    DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId);
 
 }

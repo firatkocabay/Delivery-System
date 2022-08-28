@@ -1,10 +1,13 @@
 package com.poc.deliverysystem.service.impl;
 
+import com.poc.deliverysystem.exception.CompanyNotFoundException;
+import com.poc.deliverysystem.exception.CompanyNotMatchException;
 import com.poc.deliverysystem.exception.DateParseException;
 import com.poc.deliverysystem.exception.SearchIllegalArgumentException;
 import com.poc.deliverysystem.model.dto.DeliveryDetailResponseDto;
 import com.poc.deliverysystem.model.dto.DeliveryRequestDto;
 import com.poc.deliverysystem.model.dto.DeliveryResponseDto;
+import com.poc.deliverysystem.model.entity.Company;
 import com.poc.deliverysystem.model.entity.Delivery;
 import com.poc.deliverysystem.model.enums.DeliveryStatus;
 import com.poc.deliverysystem.repository.DeliveryRepository;
@@ -21,12 +24,13 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,7 +46,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public List<DeliveryDetailResponseDto> getDeliveriesByCriteria(Map<String, String> queryCriteria) {
+    public List<DeliveryDetailResponseDto> getDeliveriesByCriteria(Map<String, String> queryCriteria, String companyId) {
         List<DeliveryDetailResponseDto> deliveryResponseDtoList = new ArrayList<>();
         GenericSpecification<Delivery> genericSpecification = new GenericSpecification<>();
         Map<String,Integer> pageAndLimit = new HashMap<>();
@@ -54,7 +58,10 @@ public class DeliveryServiceImpl implements DeliveryService {
                         pageAndLimit.put(key, Integer.valueOf(value));
                         break;
                     case "senderCompany":
-                        genericSpecification.add(new SearchCriteria(key, companyService.findCompany(value), SearchOperation.EQUAL));
+                        if (companyId.equals(value))
+                            genericSpecification.add(new SearchCriteria(key, companyService.findCompany(value), SearchOperation.EQUAL));
+                        else
+                            throw new CompanyNotMatchException("Company not match!");
                         break;
                     case "senderWarehouseAddress":
                     case "deliveryAddress":
@@ -74,6 +81,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                         genericSpecification.add(new SearchCriteria(key, value, SearchOperation.EQUAL));
                 }
             });
+
+            if (queryCriteria.isEmpty())
+                genericSpecification.add(new SearchCriteria("senderCompany", companyService.findCompany(companyId), SearchOperation.EQUAL));
 
             if (pageAndLimit.get("page") != null || pageAndLimit.get("limit") != null) {
                 Page<Delivery> deliveryList;
@@ -98,6 +108,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return deliveryResponseDtoList;
+    }
+
+    @Override
+    public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId) {
+        DeliveryResponseDto responseDto = new DeliveryResponseDto();
+        Company company = companyService.findCompany(companyId);
+        Delivery delivery = createDeliveryEntity(deliveryRequestDto, company);
+        responseDto.setDeliveryId(delivery.getDeliveryId());
+        return responseDto;
     }
 
     private static void createResponseDto(List<DeliveryDetailResponseDto> deliveryResponseDtoList, Page<Delivery> deliveryList) {
@@ -132,15 +151,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         });
     }
 
-    @Override
-    public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto) {
-        DeliveryResponseDto responseDto = new DeliveryResponseDto();
-        companyService.findCompany(deliveryRequestDto.getCompanyId());
-        Delivery delivery = createDeliveryEntity(deliveryRequestDto);
-        responseDto.setDeliveryId(delivery.getDeliveryId());
-        return responseDto;
-    }
-
     private LocalDateTime getDateByValue(String value) {
         try {
             return new Timestamp(formatter.parse(value).getTime()).toLocalDateTime();
@@ -149,11 +159,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
     }
 
-    private Delivery createDeliveryEntity(DeliveryRequestDto deliveryRequestDto) {
+    private Delivery createDeliveryEntity(DeliveryRequestDto deliveryRequestDto, Company company) {
         Delivery delivery = new Delivery();
         delivery.setDeliveryAddress(deliveryRequestDto.getDeliveryAddress());
         delivery.setSenderWarehouseAddress(deliveryRequestDto.getSenderWarehouseAddress());
-        delivery.setSenderCompany(companyService.findCompany(deliveryRequestDto.getCompanyId()));
+        delivery.setSenderCompany(company);
         delivery.setOrderId(deliveryRequestDto.getOrderId());
         delivery.setStatus(DeliveryStatus.NEW);
         delivery.setRequesterInformation(deliveryRequestDto.getRequesterInformation());
