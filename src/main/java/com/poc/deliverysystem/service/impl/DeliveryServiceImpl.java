@@ -106,6 +106,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         return deliveryResponseDtoList;
     }
 
+    @Transactional
+    @Override
+    public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId) {
+        DeliveryResponseDto responseDto = new DeliveryResponseDto();
+        Company company = companyService.findCompany(companyId);
+        String deliveryId = createDeliveryEntity(deliveryRequestDto, company);
+        responseDto.setDeliveryId(deliveryId);
+        return responseDto;
+    }
+
     private Page<Delivery> getDeliveriesByPageAndLimit(GenericSpecification<Delivery> genericSpecification, Map<String, Integer> pageAndLimit) {
         Page<Delivery> deliveryList;
         if (pageAndLimit.get(LIMIT) == null || pageAndLimit.get(LIMIT) < 1) {
@@ -121,46 +131,26 @@ public class DeliveryServiceImpl implements DeliveryService {
         return deliveryList;
     }
 
-    @Transactional
-    @Override
-    public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId) {
-        DeliveryResponseDto responseDto = new DeliveryResponseDto();
-        Company company = companyService.findCompany(companyId);
-        String deliveryId = createDeliveryEntity(deliveryRequestDto, company);
-        responseDto.setDeliveryId(deliveryId);
-        return responseDto;
-    }
-
     private static void createResponseDto(List<DeliveryDetailResponseDto> deliveryResponseDtoList, Page<Delivery> deliveryList) {
-        deliveryList.forEach(delivery -> {
-            DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
-            responseDto.setDeliveryId(delivery.getDeliveryId());
-            responseDto.setSenderCompanyName(delivery.getSenderCompany().getCompanyName());
-            responseDto.setOrderId(delivery.getOrderId());
-            responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
-            responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
-            responseDto.setRequesterInformation(delivery.getRequesterInformation());
-            responseDto.setStatus(delivery.getStatus());
-            responseDto.setCreationDate(delivery.getCreationDate());
-            responseDto.setUpdateDate(delivery.getUpdateDate());
-            deliveryResponseDtoList.add(responseDto);
-        });
+        deliveryList.forEach(delivery -> createResponseFromDelivery(deliveryResponseDtoList, delivery));
     }
 
     private static void createResponseDto(List<DeliveryDetailResponseDto> deliveryResponseDtoList, List<Delivery> deliveryList) {
-        deliveryList.forEach(delivery -> {
-            DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
-            responseDto.setDeliveryId(delivery.getDeliveryId());
-            responseDto.setSenderCompanyName(delivery.getSenderCompany().getCompanyName());
-            responseDto.setOrderId(delivery.getOrderId());
-            responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
-            responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
-            responseDto.setRequesterInformation(delivery.getRequesterInformation());
-            responseDto.setStatus(delivery.getStatus());
-            responseDto.setCreationDate(delivery.getCreationDate());
-            responseDto.setUpdateDate(delivery.getUpdateDate());
-            deliveryResponseDtoList.add(responseDto);
-        });
+        deliveryList.forEach(delivery -> createResponseFromDelivery(deliveryResponseDtoList, delivery));
+    }
+
+    private static void createResponseFromDelivery(List<DeliveryDetailResponseDto> deliveryResponseDtoList, Delivery delivery) {
+        DeliveryDetailResponseDto responseDto = new DeliveryDetailResponseDto();
+        responseDto.setDeliveryId(delivery.getDeliveryId());
+        responseDto.setSenderCompanyName(delivery.getSenderCompany().getCompanyName());
+        responseDto.setOrderId(delivery.getOrderId());
+        responseDto.setSenderWarehouseAddress(delivery.getSenderWarehouseAddress());
+        responseDto.setDeliveryAddress(delivery.getDeliveryAddress());
+        responseDto.setRequesterInformation(delivery.getRequesterInformation());
+        responseDto.setStatus(delivery.getStatus());
+        responseDto.setCreationDate(delivery.getCreationDate());
+        responseDto.setUpdateDate(delivery.getUpdateDate());
+        deliveryResponseDtoList.add(responseDto);
     }
 
     private LocalDateTime getDateByValue(String value) {
