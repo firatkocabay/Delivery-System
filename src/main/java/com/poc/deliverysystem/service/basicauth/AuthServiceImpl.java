@@ -1,6 +1,6 @@
 package com.poc.deliverysystem.service.basicauth;
 
-import com.poc.deliverysystem.model.dto.UserDto;
+import com.poc.deliverysystem.model.dto.CompanyUserDto;
 import com.poc.deliverysystem.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,8 +28,8 @@ public class AuthServiceImpl implements AuthService {
             if (values.length == 2) {
                 String username = values[0];
                 String password = values[1];
-                UserDto userDto = userService.getUserByUserNameAndPassword(username, Base64.getEncoder().encodeToString(password.getBytes()));
-                return userDto.getUserName() != null;
+                CompanyUserDto companyUserDto = userService.getUserByUserNameAndPassword(username, Base64.getEncoder().encodeToString(password.getBytes()));
+                return companyUserDto.getUserName() != null;
             }
         }
         return false;

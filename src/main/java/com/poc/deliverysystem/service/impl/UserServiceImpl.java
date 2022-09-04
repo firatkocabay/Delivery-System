@@ -1,6 +1,6 @@
 package com.poc.deliverysystem.service.impl;
 
-import com.poc.deliverysystem.model.dto.UserDto;
+import com.poc.deliverysystem.model.dto.CompanyUserDto;
 import com.poc.deliverysystem.model.entity.CompanyUser;
 import com.poc.deliverysystem.repository.UserRepository;
 import com.poc.deliverysystem.service.UserService;
@@ -23,24 +23,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByUserNameAndPassword(String userName, String password) {
-        UserDto userDto = new UserDto();
+    public CompanyUserDto getUserByUserNameAndPassword(String userName, String password) {
+        CompanyUserDto companyUserDto = new CompanyUserDto();
         Optional<CompanyUser> optionalUser = userRepository.findByUserNameAndPassword(userName, password);
         if (optionalUser.isPresent()) {
-            userDto.setUserName(optionalUser.get().getUserName());
-            userDto.setPassword(optionalUser.get().getPassword());
-            userDto.setCompanyId(optionalUser.get().getCompanyId());
+            companyUserDto.setUserName(optionalUser.get().getUserName());
+            companyUserDto.setPassword(optionalUser.get().getPassword());
+            companyUserDto.setCompanyId(optionalUser.get().getCompanyId());
         }
-        return userDto;
+        return companyUserDto;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void saveUser(UserDto userDto) {
+    public void saveUser(CompanyUserDto companyUserDto) {
         CompanyUser companyUser = new CompanyUser();
-        companyUser.setUserName(userDto.getUserName());
-        companyUser.setPassword(userDto.getPassword());
-        companyUser.setCompanyId(userDto.getCompanyId());
+        companyUser.setUserName(companyUserDto.getUserName());
+        companyUser.setPassword(companyUserDto.getPassword());
+        companyUser.setCompanyId(companyUserDto.getCompanyId());
         companyUser.setEnabled(true);
         companyUser.setCreationDate(LocalDateTime.now());
         userRepository.save(companyUser);

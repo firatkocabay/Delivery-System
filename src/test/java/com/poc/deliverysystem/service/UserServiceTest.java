@@ -1,6 +1,6 @@
 package com.poc.deliverysystem.service;
 
-import com.poc.deliverysystem.model.dto.UserDto;
+import com.poc.deliverysystem.model.dto.CompanyUserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,18 +21,18 @@ class UserServiceTest {
 
     @Test
     void givenUserDtoWhenCallSaveUserThenReturnedDtoShouldBeSame() {
-        UserDto userDto = new UserDto();
-        userDto.setUserName("test");
-        userDto.setPassword("pass123");
-        userDto.setCompanyId("abc456");
+        CompanyUserDto companyUserDto = new CompanyUserDto();
+        companyUserDto.setUserName("test");
+        companyUserDto.setPassword("pass123");
+        companyUserDto.setCompanyId("abc456");
 
-        userService.saveUser(userDto);
+        userService.saveUser(companyUserDto);
 
-        UserDto expectedUserDto = userService.getUserByUserNameAndPassword(userDto.getUserName(), userDto.getPassword());
+        CompanyUserDto expectedCompanyUserDto = userService.getUserByUserNameAndPassword(companyUserDto.getUserName(), companyUserDto.getPassword());
 
-        assertEquals(expectedUserDto.getUserName(), userDto.getUserName());
-        assertEquals(expectedUserDto.getPassword(), userDto.getPassword());
-        assertEquals(expectedUserDto.getCompanyId(), userDto.getCompanyId());
+        assertEquals(expectedCompanyUserDto.getUserName(), companyUserDto.getUserName());
+        assertEquals(expectedCompanyUserDto.getPassword(), companyUserDto.getPassword());
+        assertEquals(expectedCompanyUserDto.getCompanyId(), companyUserDto.getCompanyId());
     }
 
 }

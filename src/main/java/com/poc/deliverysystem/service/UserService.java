@@ -1,11 +1,11 @@
 package com.poc.deliverysystem.service;
 
-import com.poc.deliverysystem.model.dto.UserDto;
+import com.poc.deliverysystem.model.dto.CompanyUserDto;
 
 public interface UserService {
 
-    UserDto getUserByUserNameAndPassword(String userName, String password);
+    CompanyUserDto getUserByUserNameAndPassword(String userName, String password);
 
-    void saveUser(UserDto userDto);
+    void saveUser(CompanyUserDto companyUserDto);
 
 }

@@ -3,7 +3,7 @@ package com.poc.deliverysystem.service.impl;
 import com.poc.deliverysystem.exception.CompanyNotFoundException;
 import com.poc.deliverysystem.model.dto.CompanyRequestDto;
 import com.poc.deliverysystem.model.dto.CompanyResponseDto;
-import com.poc.deliverysystem.model.dto.UserDto;
+import com.poc.deliverysystem.model.dto.CompanyUserDto;
 import com.poc.deliverysystem.model.entity.Company;
 import com.poc.deliverysystem.repository.CompanyRepository;
 import com.poc.deliverysystem.service.CompanyService;
@@ -50,11 +50,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private void createCompanyUser(String companyId, String companyUserName) {
-        UserDto userDto = new UserDto();
-        userDto.setUserName(companyUserName);
-        userDto.setPassword(Base64.getEncoder().encodeToString(companyId.getBytes()));
-        userDto.setCompanyId(companyId);
-        userService.saveUser(userDto);
+        CompanyUserDto companyUserDto = new CompanyUserDto();
+        companyUserDto.setUserName(companyUserName);
+        companyUserDto.setPassword(Base64.getEncoder().encodeToString(companyId.getBytes()));
+        companyUserDto.setCompanyId(companyId);
+        userService.saveUser(companyUserDto);
     }
 
     @Override
