@@ -38,6 +38,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     public static final String LIMIT = "limit";
     public static final String CREATION_DATE = "creationDate";
+    public static final String PAGE = "page";
     private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final DeliveryRepository deliveryRepository;
     private final CompanyService companyService;
@@ -55,7 +56,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         try {
             queryCriteria.forEach((key, value) -> {
                 switch (key) {
-                    case "page":
+                    case PAGE:
                     case LIMIT:
                         pageAndLimit.put(key, Integer.valueOf(value));
                         break;
@@ -87,15 +88,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             if (queryCriteria.isEmpty())
                 genericSpecification.add(new SearchCriteria("senderCompany", companyService.findCompany(companyId), SearchOperation.EQUAL));
 
-            if (pageAndLimit.get("page") != null || pageAndLimit.get(LIMIT) != null) {
-                Page<Delivery> deliveryList;
-                if (pageAndLimit.get(LIMIT) == null || pageAndLimit.get(LIMIT) < 1) {
-                    PageRequest pageRequest = PageRequest.of(pageAndLimit.get("page"), 10);
-                    deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
-                } else {
-                    PageRequest pageRequest = PageRequest.of(0, pageAndLimit.get(LIMIT));
-                    deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
-                }
+            if (pageAndLimit.get(PAGE) != null || pageAndLimit.get(LIMIT) != null) {
+                Page<Delivery> deliveryList = getDeliveriesByPageAndLimit(genericSpecification, pageAndLimit);
                 createResponseDto(deliveryResponseDtoList, deliveryList);
             } else {
                 List<Delivery> deliveryList = deliveryRepository.findAll(genericSpecification);
@@ -110,6 +104,21 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return deliveryResponseDtoList;
+    }
+
+    private Page<Delivery> getDeliveriesByPageAndLimit(GenericSpecification<Delivery> genericSpecification, Map<String, Integer> pageAndLimit) {
+        Page<Delivery> deliveryList;
+        if (pageAndLimit.get(LIMIT) == null || pageAndLimit.get(LIMIT) < 1) {
+            PageRequest pageRequest = PageRequest.of(pageAndLimit.get(PAGE), 10);
+            deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
+        } else if (pageAndLimit.get(PAGE) == null || pageAndLimit.get(PAGE) < 0) {
+            PageRequest pageRequest = PageRequest.of(0, pageAndLimit.get(LIMIT));
+            deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
+        } else{
+            PageRequest pageRequest = PageRequest.of(pageAndLimit.get(PAGE), pageAndLimit.get(LIMIT));
+            deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
+        }
+        return deliveryList;
     }
 
     @Transactional
