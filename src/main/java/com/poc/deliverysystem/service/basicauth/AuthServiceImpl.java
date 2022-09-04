@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean validateBasicAuthentication(String basicAuthHeaderValue) {
+    public boolean validateBasicAuthentication(String basicAuthHeaderValue) {
         if (StringUtils.hasText(basicAuthHeaderValue) && basicAuthHeaderValue.toLowerCase().startsWith("basic")) {
             String base64Credentials = basicAuthHeaderValue.substring("Basic".length()).trim();
             byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);

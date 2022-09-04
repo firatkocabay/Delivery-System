@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class GenericSpecification<T> implements Specification<T> {
 
-    private List<SearchCriteria> list;
+    private transient List<SearchCriteria> list;
 
     public GenericSpecification() {
         this.list = new ArrayList<>();

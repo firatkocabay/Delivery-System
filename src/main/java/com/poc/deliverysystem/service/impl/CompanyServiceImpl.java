@@ -41,7 +41,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Transactional
-    protected String createCompany(CompanyRequestDto companyRequestDto) {
+    public String createCompany(CompanyRequestDto companyRequestDto) {
         Company company = new Company();
         company.setCompanyName(companyRequestDto.getCompanyName());
         company.setCompanyAddress(companyRequestDto.getCompanyAddress());

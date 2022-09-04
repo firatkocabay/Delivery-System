@@ -36,6 +36,8 @@ import java.util.Map;
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
 
+    public static final String LIMIT = "limit";
+    public static final String CREATION_DATE = "creationDate";
     private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final DeliveryRepository deliveryRepository;
     private final CompanyService companyService;
@@ -54,7 +56,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             queryCriteria.forEach((key, value) -> {
                 switch (key) {
                     case "page":
-                    case "limit":
+                    case LIMIT:
                         pageAndLimit.put(key, Integer.valueOf(value));
                         break;
                     case "senderCompany":
@@ -68,12 +70,12 @@ public class DeliveryServiceImpl implements DeliveryService {
                         genericSpecification.add(new SearchCriteria(key, value, SearchOperation.MATCH));
                         break;
                     case "from":
-                        genericSpecification.add(new SearchCriteria("creationDate", getDateByValue(value), SearchOperation.GREATER_THAN_EQUAL));
+                        genericSpecification.add(new SearchCriteria(CREATION_DATE, getDateByValue(value), SearchOperation.GREATER_THAN_EQUAL));
                         break;
                     case "to":
-                        genericSpecification.add(new SearchCriteria("creationDate", getDateByValue(value), SearchOperation.LESS_THAN_EQUAL));
+                        genericSpecification.add(new SearchCriteria(CREATION_DATE, getDateByValue(value), SearchOperation.LESS_THAN_EQUAL));
                         break;
-                    case "creationDate":
+                    case CREATION_DATE:
                     case "updateDate":
                         genericSpecification.add(new SearchCriteria(key, getDateByValue(value), SearchOperation.EQUAL));
                         break;
@@ -85,13 +87,13 @@ public class DeliveryServiceImpl implements DeliveryService {
             if (queryCriteria.isEmpty())
                 genericSpecification.add(new SearchCriteria("senderCompany", companyService.findCompany(companyId), SearchOperation.EQUAL));
 
-            if (pageAndLimit.get("page") != null || pageAndLimit.get("limit") != null) {
+            if (pageAndLimit.get("page") != null || pageAndLimit.get(LIMIT) != null) {
                 Page<Delivery> deliveryList;
-                if (pageAndLimit.get("limit") == null || pageAndLimit.get("limit") < 1) {
+                if (pageAndLimit.get(LIMIT) == null || pageAndLimit.get(LIMIT) < 1) {
                     PageRequest pageRequest = PageRequest.of(pageAndLimit.get("page"), 10);
                     deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
                 } else {
-                    PageRequest pageRequest = PageRequest.of(0, pageAndLimit.get("limit"));
+                    PageRequest pageRequest = PageRequest.of(0, pageAndLimit.get(LIMIT));
                     deliveryList = deliveryRepository.findAll(genericSpecification, pageRequest);
                 }
                 createResponseDto(deliveryResponseDtoList, deliveryList);
@@ -110,6 +112,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         return deliveryResponseDtoList;
     }
 
+    @Transactional
     @Override
     public DeliveryResponseDto createNewDelivery(DeliveryRequestDto deliveryRequestDto, String companyId) {
         DeliveryResponseDto responseDto = new DeliveryResponseDto();
@@ -159,8 +162,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
     }
 
-    @Transactional
-    protected String createDeliveryEntity(DeliveryRequestDto deliveryRequestDto, Company company) {
+
+    private String createDeliveryEntity(DeliveryRequestDto deliveryRequestDto, Company company) {
         Delivery delivery = new Delivery();
         delivery.setDeliveryAddress(deliveryRequestDto.getDeliveryAddress());
         delivery.setSenderWarehouseAddress(deliveryRequestDto.getSenderWarehouseAddress());

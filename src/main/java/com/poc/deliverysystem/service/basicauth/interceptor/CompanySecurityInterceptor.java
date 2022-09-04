@@ -4,31 +4,31 @@ import com.poc.deliverysystem.service.basicauth.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Component
-public class EmployeeSecurityInterceptor extends HandlerInterceptorAdapter {
-    private static final String AUTH_HEADER_PARAMETER_AUTHERIZATION = "authorization";
+public class CompanySecurityInterceptor implements HandlerInterceptor {
+    private static final String HEADER_PARAMETER_AUTHORIZATION = "authorization";
     private final AuthService authService;
 
-    public EmployeeSecurityInterceptor(AuthService authService) {
+    public CompanySecurityInterceptor(AuthService authService) {
         this.authService = authService;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Boolean isValidBasicAuthRequest = false;
+        boolean isValidBasicAuthRequest = false;
         if (request.getRequestURI().contains("/company/register")
                 || request.getRequestURI().contains("/h2-console"))
             return true;
         log.info("[Inside PRE Handle interceptor][" + request + "]" + "[" + request.getMethod() + "]" + request.getRequestURI());
         try {
-            String basicAuthHeaderValue = request.getHeader(AUTH_HEADER_PARAMETER_AUTHERIZATION);
+            String basicAuthHeaderValue = request.getHeader(HEADER_PARAMETER_AUTHORIZATION);
             isValidBasicAuthRequest = authService.validateBasicAuthentication(basicAuthHeaderValue);
             if (!isValidBasicAuthRequest) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
