@@ -46,7 +46,7 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "c9926026-07da-4dd1-9629-0650d335867c",
+							"value": "77fd4a10-219f-4455-a1de-4d974cf58972",
 							"type": "string"
 						},
 						{
@@ -60,7 +60,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"orderId\": \"12345\",\r\n    \"requesterInformation\": \"test1\",\r\n    \"senderWarehouseAddress\": \"Cumhuriyet Mahallesi Merkez Adana Türkiye\",\r\n    \"deliveryAddress\": \"Karşıyaka Mahallesi Merkez İzmir Türkiye\"\r\n}",
+					"raw": "{\r\n    \"orderId\": \"123456\",\r\n    \"requesterInformation\": \"test1\",\r\n    \"senderWarehouseAddress\": \"Cumhuriyet Mahallesi Merkez Adana Türkiye\",\r\n    \"deliveryAddress\": \"Karşıyaka Mahallesi Merkez İzmir Türkiye\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -90,7 +90,7 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "c9926026-07da-4dd1-9629-0650d335867c",
+							"value": "77fd4a10-219f-4455-a1de-4d974cf58972",
 							"type": "string"
 						},
 						{
@@ -103,7 +103,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/v1/delivery",
+					"raw": "http://localhost:8080/v1/delivery?from=2022-08-27 11:20:20&to=2022-09-07 11:20:20&page=0&limit=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -112,6 +112,24 @@
 					"path": [
 						"v1",
 						"delivery"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2022-08-27 11:20:20"
+						},
+						{
+							"key": "to",
+							"value": "2022-09-07 11:20:20"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "1"
+						}
 					]
 				}
 			},
